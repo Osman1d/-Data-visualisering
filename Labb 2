@@ -1,0 +1,73 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Steg a: Läs in filen och ändra kolumnnamnen
+df = pd.read_excel('riket2023_åk9_np.xlsx', sheet_name=None)
+
+# Anta att arknamnen är 'Matematik', 'Svenska', 'Engelska', 'Historia' för de olika ämnena
+
+# Ändra kolumnnamnen för varje ämne
+for subject, data in df.items():
+    data.columns = ['Plats', 'Huvudman', 'Totalt (A-F)', 'Flickor (A-F)', 'Pojkar (A-F)',
+                     'Totalt (A-E)', 'Flickor (A-E)', 'Pojkar (A-E)', 'Totalt (poäng)', 
+                     'Flickor (poäng)', 'Pojkar (poäng)']
+
+# Steg b: Ta reda på antalet som fått F i matematik totalt, pojkar respektive flickor
+math_data = df['Matematik']
+f_failed_total = math_data['Totalt (A-F)'].sum()
+f_failed_boys = math_data['Pojkar (A-F)'].sum()
+f_failed_girls = math_data['Flickor (A-F)'].sum()
+
+print("Totalt antal som fått F i matematik:", f_failed_total)
+print("Antal pojkar som fått F i matematik:", f_failed_boys)
+print("Antal flickor som fått F i matematik:", f_failed_girls)
+
+# Steg c: Rita ett stapeldiagram på totala poängen för de olika ämnena
+subjects = list(df.keys())  # antar att arknamnen är ämnen
+total_points = [df[subject]['Totalt (poäng)'].sum() for subject in subjects]
+
+plt.figure(figsize=(10, 6))
+plt.bar(subjects, total_points, color='skyblue')
+plt.xlabel('Ämne')
+plt.ylabel('Totala poäng')
+plt.title('Totala poängen för de olika ämnena')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# Steg d: Rita fyra olika stapeldiagram i subplots på totala poängen för de olika ämnena för de olika huvudmännen
+huvudman_names = df['Matematik']['Huvudman'].unique()
+fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 10))
+
+for idx, huvudman in enumerate(huvudman_names):
+    ax = axes[idx//2, idx%2]
+    huvudman_data = df['Matematik'][df['Matematik']['Huvudman'] == huvudman]
+    total_points = huvudman_data['Totalt (poäng)']
+    ax.bar(subjects, total_points, color='lightgreen')
+    ax.set_title(f'Totala poängen för {huvudman}')
+    ax.set_xlabel('Ämne')
+    ax.set_ylabel('Totala poäng')
+    ax.set_xticks(range(len(subjects)))
+    ax.set_xticklabels(subjects, rotation=45)
+    ax.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# Steg e: Rita ett stapeldiagram i subplots på totala poängen för de olika ämnena för de olika huvudmännen
+fig, axes = plt.subplots(nrows=len(huvudman_names), ncols=1, figsize=(8, 6*len(huvudman_names)))
+
+for idx, huvudman in enumerate(huvudman_names):
+    ax = axes[idx]
+    huvudman_data = df['Matematik'][df['Matematik']['Huvudman'] == huvudman]
+    total_points = huvudman_data['Totalt (poäng)']
+    ax.bar(subjects, total_points, color='lightcoral')
+    ax.set_title(f'Totala poängen för {huvudman}')
+    ax.set_xlabel('Ämne')
+    ax.set_ylabel('Totala poäng')
+    ax.set_xticks(range(len(subjects)))
+    ax.set_xticklabels(subjects, rotation=45)
+    ax.grid(True)
+
+plt.tight_layout()
+plt.show()

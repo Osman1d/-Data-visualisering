@@ -1,0 +1,34 @@
+import numpy as np
+
+# Simulerad data för Pichus och Pikachus längder och bredder
+pichu_data = np.array([[5.0, 2.5],
+                       [4.5, 2.3],
+                       [4.8, 2.1],
+                       [5.2, 2.4],
+                       [4.9, 2.2]])
+
+pikachu_data = np.array([[7.0, 3.0],
+                         [6.5, 2.8],
+                         [6.8, 3.1],
+                         [7.2, 3.3],
+                         [7.1, 3.2]])
+
+# Funktion för att rensa datan
+def clean_data(data):
+    # Ta bort eventuella duplikat
+    cleaned_data = np.unique(data, axis=0)
+    
+    # Hantera eventuella ogiltiga värden eller outliers
+    
+    return cleaned_data
+
+# Rensa datan för Pichus och Pikachus
+cleaned_pichu_data = clean_data(pichu_data)
+cleaned_pikachu_data = clean_data(pikachu_data)
+
+print("Rensad data för Pichus:")
+print(cleaned_pichu_data)
+
+print("\nRensad data för Pikachus:")
+print(cleaned_pikachu_data)
+#Källhänvisning tog hjälp av youtbe samt chatgpt
