@@ -1,0 +1,74 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Läs in datasetet
+df = pd.read_excel("betyg_o_prov_riksnivå.xlsx")
+
+# a) Andel elever som saknar godkänt betyg i ett eller fler ämnen för läsår 18-23
+# Skapa ett linjediagram för totalt, flickor och pojkar
+df_a = df[(df['Läsår'] >= 18) & (df['Läsår'] <= 23)]
+df_a = df_a.groupby('Läsår').mean()  # Medelvärde för att få andelar
+
+fig_a = go.Figure()
+
+fig_a.add_trace(go.Scatter(x=df_a.index, y=df_a['Totalt andel med minst ett F i betyg'], mode='lines', name='Totalt'))
+fig_a.add_trace(go.Scatter(x=df_a.index, y=df_a['Flickor andel med minst ett F i betyg'], mode='lines', name='Flickor'))
+fig_a.add_trace(go.Scatter(x=df_a.index, y=df_a['Pojkar andel med minst ett F i betyg'], mode='lines', name='Pojkar'))
+
+fig_a.update_layout(title='Andel elever med minst ett F i betyg för läsår 18-23',
+                    xaxis_title='Läsår',
+                    yaxis_title='Andel med minst ett F i betyg')
+
+fig_a.show()
+
+# b) Meritvärde för 16 ämnen för totalt, flickor och pojkar för läsår 18-23
+# Skapa ett linjediagram för meritvärde för totalt, flickor och pojkar
+df_b = df[(df['Läsår'] >= 18) & (df['Läsår'] <= 23)]
+
+fig_b = go.Figure()
+
+subjects = df_b.columns[5:21]  # 16 ämnen
+
+for gender in ['Totalt', 'Flickor', 'Pojkar']:
+    avg_merit = df_b.groupby('Läsår')[subjects].mean().mean(axis=1)  # Genomsnittligt meritvärde för alla ämnen
+    fig_b.add_trace(go.Scatter(x=df_b['Läsår'].unique(), y=avg_merit, mode='lines', name=gender))
+
+fig_b.update_layout(title='Genomsnittligt meritvärde för läsår 18-23',
+                    xaxis_title='Läsår',
+                    yaxis_title='Genomsnittligt meritvärde')
+
+fig_b.show()
+
+# c) Undersök andra variabler och deras påverkan på meritvärde och andel med minst ett saknat betyg för läsår 22/23
+# Exempelvis föräldrarnas utbildningsbakgrund
+
+# Föräldrarnas utbildningsbakgrund jämfört med meritvärde och andel med minst ett saknat betyg
+df_c = df[df['Läsår'] == 22]  # Data för läsår 22/23
+
+# Skapa grafer (exempelvis stapeldiagram eller boxplot) för att jämföra föräldrarnas utbildningsbakgrund med meritvärde och andel med minst ett saknat betyg
+
+# Exempel: Boxplot för jämförelse mellan föräldrarnas utbildningsbakgrund och meritvärde
+fig_c1 = go.Figure()
+
+for education in df_c['Föräldrarnas utbildningsbakgrund'].unique():
+    data = df_c[df_c['Föräldrarnas utbildningsbakgrund'] == education]['Totalt meritvärde']
+    fig_c1.add_trace(go.Box(y=data, name=education))
+
+fig_c1.update_layout(title='Jämförelse mellan föräldrarnas utbildningsbakgrund och meritvärde för läsår 22/23',
+                     yaxis_title='Meritvärde',
+                     xaxis_title='Föräldrarnas utbildningsbakgrund')
+
+fig_c1.show()
+
+# Exempel: Boxplot för jämförelse mellan föräldrarnas utbildningsbakgrund och andel med minst ett saknat betyg
+fig_c2 = go.Figure()
+
+for education in df_c['Föräldrarnas utbildningsbakgrund'].unique():
+    data = df_c[df_c['Föräldrarnas utbildningsbakgrund'] == education]['Totalt andel med minst ett F i betyg']
+    fig_c2.add_trace(go.Box(y=data, name=education))
+
+fig_c2.update_layout(title='Jämförelse mellan föräldrarnas utbildningsbakgrund och andel med minst ett F i betyg för läsår 22/23',
+                     yaxis_title='Andel med minst ett F i betyg',
+                     xaxis_title='Föräldrarnas utbildningsbakgrund')
+
+fig_c2.show()
